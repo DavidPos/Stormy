@@ -3,6 +3,8 @@ package sailloft.stormy;
 import android.content.Context;
 import android.content.IntentSender;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -30,6 +32,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -69,11 +73,11 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         mRefreshImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getForecast(latitude,latitude);
+                getForecast(latitude,longitude);
             }
         });
         getForecast(latitude, longitude);
-        mGoogleApiClient.disconnect();
+
 
     }
 
@@ -136,9 +140,9 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    //mGoogleApiClient.connect();
+
                                     updateDisplay();
-                                   // mGoogleApiClient.disconnect();
+
                                 }
                             });
 
@@ -253,7 +257,26 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         if (mLastLocation != null) {
             latitude = mLastLocation.getLatitude();
             longitude = mLastLocation.getLongitude();
+            List<Address> addresses = null;
+            Geocoder geocoder =
+                    new Geocoder(this,Locale.getDefault());
+            try {
+               addresses= geocoder.getFromLocation(latitude,longitude,3);
+               Log.i(TAG, addresses.toString());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }catch (IllegalArgumentException e2) {
+                // Error message to post in the log
+                String errorString = "Illegal arguments " +
+                        latitude + longitude +
+                        " passed to address service";
+                Log.e(TAG, errorString);
+                e2.printStackTrace();
+
+            }
         }
+
     }
 
 
@@ -275,4 +298,6 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
             Log.i(TAG, "Location services connection failed with code " + connectionResult.getErrorCode());
         }
     }
+
+
 }
