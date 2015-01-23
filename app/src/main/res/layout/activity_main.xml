@@ -103,7 +103,7 @@
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Precipitation Chance"
+                android:text="Precipitation"
                 android:id="@+id/preciepLabel"
                 android:textColor="@android:color/white"
                 android:gravity="center_horizontal"/>

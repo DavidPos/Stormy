@@ -54,6 +54,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     @InjectView(R.id.iconImageView) ImageView mIconImageView;
     @InjectView(R.id.refreshImageView) ImageView mRefreshImageView;
     @InjectView(R.id.progressBar) ProgressBar mProgressBar;
+    @InjectView(R.id.locationLabel) TextView mLocationLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +77,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                 getForecast(latitude,longitude);
             }
         });
-        getForecast(latitude, longitude);
+        //getForecast(latitude, longitude);
 
 
     }
@@ -179,7 +180,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     private void updateDisplay() {
         mTemperatureLabel.setText(mCurrentWeather.getTemperature() + "");
         mTimeLabel.setText("At " + mCurrentWeather.getFormattedTime() + " it will be");
-        mHumidityValue.setText(mCurrentWeather.getHumidity() + "");
+        mHumidityValue.setText(mCurrentWeather.getHumidity() + "%");
         mPrecipValue.setText(mCurrentWeather.getPrecipChance() + "%");
         mSummaryLabel.setText(mCurrentWeather.getSummary());
         Drawable drawable = getResources().getDrawable(mCurrentWeather.getIconId());
@@ -257,16 +258,17 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         if (mLastLocation != null) {
             latitude = mLastLocation.getLatitude();
             longitude = mLastLocation.getLongitude();
+
             List<Address> addresses = null;
             Geocoder geocoder =
-                    new Geocoder(this,Locale.getDefault());
+                    new Geocoder(this, Locale.getDefault());
             try {
-               addresses= geocoder.getFromLocation(latitude,longitude,3);
-               Log.i(TAG, addresses.toString());
+                addresses = geocoder.getFromLocation(latitude, longitude, 3);
+                Log.i(TAG, addresses.toString());
 
             } catch (IOException e) {
                 e.printStackTrace();
-            }catch (IllegalArgumentException e2) {
+            } catch (IllegalArgumentException e2) {
                 // Error message to post in the log
                 String errorString = "Illegal arguments " +
                         latitude + longitude +
@@ -275,10 +277,27 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
                 e2.printStackTrace();
 
             }
+
+            if (addresses != null && addresses.size() > 0) {
+                // Get the first address
+                Address address = addresses.get(0);
+                /*
+                 * Format the first line of address (if available),
+                 * city, and country name.
+                 */
+                String addressText = String.format(
+                        "%s",
+                        // Locality is usually a city
+//                        address.getLocality(),
+                        address.getAddressLine(1));
+                // Set text
+                mLocationLabel.setText(addressText);
+                getForecast(latitude, longitude);
+
+
+            }
         }
-
     }
-
 
     @Override
     public void onConnectionSuspended(int i) {

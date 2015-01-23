@@ -95,7 +95,7 @@ public class CurrentWeather {
         mTemperature = temperature;
     }
 
-    public double getHumidity() {
+    public int getHumidity() {
         double mHumidityPercentage = mHumidity * 100;
 
         return (int)Math.round(mHumidityPercentage);
